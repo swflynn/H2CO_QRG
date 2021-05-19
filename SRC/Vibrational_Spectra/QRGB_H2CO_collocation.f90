@@ -110,8 +110,9 @@ subroutine XYZms_to_Internal(x,r,flag)
 logical flag
 integer ix
 double precision :: r(d1), x(d)
-double precision :: C(3),O(3),H1(3),H2(3),r1vec(3),r2vec(3),r3vec(3),r1r3normvec(3),r2r3normvec(3)
-double precision :: r1,r2,r3, costheta1,costheta2,cosphi,r1r3norm,r2r3norm,ksi
+double precision :: C(3), O(3), H1(3), H2(3), r1vec(3), r2vec(3), r3vec(3)
+double precision :: r1r3normvec(3), r2r3normvec(3), r1, r2, r3, costheta1
+double precision :: costheta1, costheta2, cosphi, r1r3norm, r2r3norm, ksi
 !============================================================================!
 if(flag) then ! transform space fixed to internal coordinates
 !###  transformations begins here (Taken from Tucker)
@@ -332,7 +333,7 @@ if(flag) then !transform x(1:d) --> rr(1:d1)
 
   costheta1 =dot_product(r1vec,r3vec)/(r1*r3)
   costheta2 =dot_product(r2vec,r3vec)/(r2*r3)
-  r1r3normvec = cross(r1vec,r3vec)      ! The sine of cross does not make any difference for Vr
+  r1r3normvec = cross(r1vec,r3vec) !sine of cross doesnt make a diff. for Vr
   r1r3norm = sqrt(dot_product(r1r3normvec,r1r3normvec))
   r2r3normvec = cross(r2vec,r3vec)
   r2r3norm = sqrt(dot_product(r2r3normvec,r2r3normvec))
@@ -371,7 +372,8 @@ double precision, parameter :: a(-2:2)=(/1.,-16.,30.,-16.,1./)/(24*ss**2)
 !============================================================================!
 do i=1,NG
   do n=1,Nc
-    y(:)=(/0d0,0d0,0d0,0d0,x1(1,n),0d0,x1(2,n),x1(3,n),0d0,x1(4,n),x1(5,n),x1(6,n)/)
+    y(:)=(/0d0,0d0,0d0,0d0,x1(1,n),0d0,x1(2,n),x1(3,n),0d0,x1(4,n),x1(5,n),&
+          x1(6,n)/)
     Smat(i,n)=Phi(i,y,r(:,n),.false.)
     Hmat(i,n)=(V_(n)+d*a(0))*Smat(i,n)
     do k=1,d
@@ -414,7 +416,8 @@ do m=0,Nc/NG-1
     do n=1,NG
       n1=m*NG+n
       H_i(n)=(V_(n1)+d*a(0))*S(n,i)
-      y(:)=(/0d0,0d0,0d0,0d0,x1(1,n1),0d0,x1(2,n1),x1(3,n1),0d0,x1(4,n1),x1(5,n1),x1(6,n1)/)
+      y(:)=(/0d0,0d0,0d0,0d0,x1(1,n1),0d0,x1(2,n1),x1(3,n1),0d0,x1(4,n1),&
+            x1(5,n1),x1(6,n1)/)
       do k=1,d
         do l=-2,2
           if(l.ne.0) then
@@ -492,7 +495,8 @@ if(NC>NG) then  !add collocation points
 endif
 open(3,file='potential.dat')
 do i=1,Nc
-  y(:)=(/0d0,0d0,0d0,0d0,x1(1,i),0d0,x1(2,i),x1(3,i),0d0,x1(4,i),x1(5,i),x1(6,i)/)
+  y(:)=(/0d0,0d0,0d0,0d0,x1(1,i),0d0,x1(2,i),x1(3,i),0d0,x1(4,i),x1(5,i),&
+        x1(6,i)/)
   V_(i)=V(y,r(:,i),.true.)  ! H2CO potential (atomic units)
   write(3,*) V_(i)/cmtoau
 enddo
