@@ -1,9 +1,9 @@
 #==============================================================================#
 FC=gfortran
-FFLAGS=-O3
-#FFLAGS= -g -O0 -Wall -Wextra -pedantic -fcheck=all -fbacktrace
+FFLAGS=-O3 -fopenmp
+#FFLAGS= -g -O0 -Wall -Wextra -pedantic -fcheck=all -fbacktrace -fopenmp
 #==============================================================================#
-all: QRGB_H2CO_diag.exe 
+all: QRGB_H2CO_diag.exe
 #==============================================================================#
 #                       Compile all Fortran Files
 #==============================================================================#
@@ -11,7 +11,7 @@ all: QRGB_H2CO_diag.exe
 	$(FC) $(FFLAGS) -o $@ -c $^
 #==============================================================================#
 QRGB_H2CO_diag.exe: h2copot_carter97.o QRGB_H2CO_collocation.o
-	$(FC) -o $@ $^ -llapack
+	$(FC) -o $@ $^ -llapack -fopenmp
 #==============================================================================#
 clean:
-	rm -rf *.o *.mod QRGB_H2CO_diag.exe 
+	rm -rf *.o *.mod QRGB_H2CO_diag.exe

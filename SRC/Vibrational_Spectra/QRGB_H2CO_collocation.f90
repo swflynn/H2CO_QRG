@@ -12,10 +12,7 @@
 !       Authors:
 !   Shane Flynn and Vladimir Mandelshtam
 !==============================================================================!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! TO DO: finish documentation for subroutines etc
-!parallel implementation for collocation subroutines
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !==============================================================================!
 !The following PES is used for this project:              (h2copot_carter97.f90)
 !==============================================================================!
@@ -68,7 +65,7 @@ double precision, parameter :: pi = acos(-1d0), d2r = pi/180d0
 !                            Global Variables                                 !
 !=============================================================================!
 integer, parameter :: Natoms = 4, d = Natoms*3, d1 = d-6
-integer :: NG, NC
+integer :: NG, NC, Nthreads
 double precision,allocatable :: alpha(:), x1(:,:), r(:,:), V_(:)
 !==============================================================================!
 !Natoms             ==>Number of atoms in the system
@@ -388,14 +385,18 @@ double precision, parameter :: ss = 1d-3                          !need to check
 double precision, parameter :: a(-2:2) = (/1.,-16.,30.,-16.,1./)/(24*ss**2)
 !==============================================================================!
 do m = 0,Nc/NG-1
+  !$OMP parallel default(shared) private(i,j,n,n1,y,k,l,yk,rr)
+  !$OMP do
   do i = 1,NG
     do n = 1,NG
       n1 = m*NG+n
       S(n,i) = Phi(i, y, r(:,n1), .false.)
     enddo
   enddo
+  !$OMP enddo
 !==============================================================================!
   do i=1,NG
+    !$OMP do
     do n=1,NG
       n1=m*NG+n
       H_i(n) = (V_(n1)+d*a(0))*S(n,i)
@@ -412,14 +413,18 @@ do m = 0,Nc/NG-1
         enddo
       enddo
     enddo
+    !$OMP enddo
 !==============================================================================!
 !                 Update the square Hmat and Smat matrices
 !==============================================================================!
+    !$OMP do
     do j = 1,NG
       Hmat(j,i) = Hmat(j,i)+dot_product(H_i, S(:,j))
       Smat(j,i) = Smat(j,i)+dot_product(S(:,i), S(:,j))
     enddo
+    !$OMP enddo
   enddo
+  !$OMP end parallel
 enddo
 end subroutine matrix_elements_col_rec
 !==============================================================================!
@@ -436,8 +441,8 @@ use QRGB_H2CO_collocation_mod
 !==============================================================================!
 implicit none
 character(len=50) :: Gaussian_centers, Collocation_points
-integer ::  i, j ,k, Nalpha
-double precision :: x2, alpha0, time1, time2, time3, alpha1, alphamin, alphamax
+integer :: i, j ,k, Nalpha
+double precision :: x2, alpha0, alpha1, alphamin, alphamax
 double precision, allocatable :: Smat(:,:), Hmat(:,:)
 !==============================================================================!
 !                            LLAPACK  variables
@@ -448,7 +453,6 @@ double precision, allocatable :: VR(:,:), y(:)
 !==============================================================================!
 !                             Read Input Data File
 !==============================================================================!
-call cpu_time(time1)
 read(*,*) Gaussian_centers, NG
 read(*,*) Collocation_points, Nc
 if(mod(Nc,NG).ne.0) STOP 'Nc should be multiple of NG'
@@ -512,8 +516,6 @@ do k = 0,Nalpha
   else
     call  matrix_elements_col_rec(Smat, Hmat)
   endif
-  call cpu_time(time2)
-  write(*,*) 'Constructed the matrices time ==>', time2-time1
   write(*,*)  "Solving the generalized eigenvalue problem..."
   flush(6)
 !==============================================================================!
@@ -536,9 +538,6 @@ do k = 0,Nalpha
   flush(21)
   flush(22)
 !==============================================================================!
-  call cpu_time(time3)
-  write(*,*) 'Diagonalization time ==>', time3-time2
   flush(6)
-  time1=time3
 enddo
 end program QRGB_H2CO_collocation
