@@ -492,13 +492,13 @@ do i=1,NG
     rr = rc(:,n)
     S(n,i) = Phi(i,rr)
     HH = (V_(n)+a(0))*S(n,i)
-    call XYZms_to_Internal(y,rr,.false.)      ! r--->y
+    call XYZms_to_Internal(y,rr,.false.)                                 !r--->y
     do k=1,d
       yk = y(k)
       do l=-stencil,stencil
         if (l.ne.0) then
           y(k) = yk+l*Delta_Y
-          call XYZms_to_Internal(y,rr,.true.)    ! y--->r (unscaled)
+          call XYZms_to_Internal(y,rr,.true.)                  !y-->r (unscaled)
           HH = HH+a(l)*Phi(i,rr)
         endif
       enddo
@@ -511,11 +511,37 @@ end subroutine matrix_elements
 !==============================================================================!
 end module QRGB_H2CO_grid_diag_mod
 !==============================================================================!
-!==============================================================================!
 program main
 use QRGB_H2CO_grid_diag_mod
+implicit none
 !==============================================================================!
-
+!               ==>
+!               ==>
+!               ==>
+!               ==>
+!               ==>
+!               ==>
+!               ==>
+!alpha0         ==>Parameter to scale Gaussian Widths
+!S              ==>(NG,NG) Overlap Matrix
+!H              ==>(NG,NG) Hamiltonian Matrix
+!==============================================================================!
+integer :: i, j, k, n, N_MC_QRG, accept, Ndiag, Nblocks
+double precision :: Vpot, time0, time1, time2, delE, dummy, mv_cutoff, P_trial
+double precision :: step, Vr, sigma_trial, E_total, V_trial, Pr, dist, dist1
+double precision :: dist_aver,step,Vr, hist(1:100), delr(d1), r_trial(d1)
+double precision :: rmin(d1), rmax(d1), x2, alpha0, V0
+double precision, allocatable :: r0(:), r(:,:), sigma(:), V_(:), S(:,:), H(:,:)
+double precision, allocatable :: S_save(:,:), H_save(:,:)
+character(len=50) :: Gaussian_centers, Collocation_points
+!=============================================================================!
+!                    LLAPACK Diagonalization Variables
+!=============================================================================!
+integer :: info,Lwork
+double precision, allocatable :: work(:), Er(:), Ei(:), BETA(:), VL(:,:), VR(:,:)
+!=============================================================================!
+!                             Read Input Data File
+!=============================================================================!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -533,11 +559,6 @@ use QRGB_H2CO_grid_diag_mod
 program main_grid
   use  QRGB_H2CO_grid_mod
   !==============================================================================!
-  implicit none
-  integer :: N_MC_QRG,accept,i,j,n,k
-  double precision :: Vpot,time1,time2,delE,dummy,mv_cutoff,P_trial,step,Vr
-  double precision :: sigma_trial,E_total,V_trial,Pr,dist,dist1,dist_aver,hist(1:100),delr(d1),r_trial(d1),rmin(d1),rmax(d1)
-  double precision,allocatable :: r(:,:),sigma(:),V_(:)
 
   !==============================================================================!
   !                              Read Input File                                 !
@@ -668,25 +689,6 @@ end program main_grid
 
 program QRGB_H2CO_diag
 
-  use QRGB_H2CO_diag_mod
-  !=============================================================================!
-  !NG             ==>Number of Gaussian Basis Functions (gridpoints)
-  !alpha0         ==>Flat Scaling Parameter for Gaussian Widths
-  !S           ==>(NG,NG) Overlap Matrix
-  !H           ==>(NG,NG) Hamiltonian Matrix
-  !=============================================================================!
-  implicit none
-  character(len=50) :: Gaussian_centers, Collocation_points
-  integer ::  i, j, k, n, Ndiag, Nblocks
-  double precision :: x2, alpha0, time0, time1, time2, V0
-  double precision, allocatable :: S(:,:), H(:,:), S_save(:,:), H_save(:,:)
-  double precision, allocatable :: r0(:)
-
-  !=============================================================================!
-  !                            LLAPACK  variables
-  !=============================================================================!
-  integer::info,Lwork
-  double precision, allocatable :: work(:), Er(:), Ei(:), BETA(:), VL(:,:), VR(:,:)
   !=============================================================================!
   !                             Read Input Data File
   !=============================================================================!
