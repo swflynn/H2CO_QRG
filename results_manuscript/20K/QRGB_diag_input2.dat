@@ -1,0 +1,7 @@
+'../../Grids/DeltaE_5K/grid_QRG20K_Ecut15K.dat' 20000   | Gaussian_centers	|NG
+10 5     | Ndiag  Nblocks
+1.0    |alpha0
+15000   |E_cut 
+5000	|delta_E
+.true.	|quasi
+
