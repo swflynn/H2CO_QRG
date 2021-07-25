@@ -1,0 +1,8 @@
+'grid_QRG.dat' 10000   | Gaussian_centers	|NG
+10 5     | Ndiag  Nblocks
+1.0    |alpha0
+15000   |E_cut 
+3000	|delta_E
+.true.	|quasi
+3.0	|gama
+
