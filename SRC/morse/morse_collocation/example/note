@@ -1,0 +1,3 @@
+The grid file naming convention means 
+NG_Ecut_gamma_grid.dat 
+gamma replaces the hardcoded d/2

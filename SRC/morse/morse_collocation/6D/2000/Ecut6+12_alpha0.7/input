@@ -1,0 +1,9 @@
+6                                                |d:             dimensionality
+.20 .18 .16 .14 .12 .1                           |omega:         morse parameter
+'../../../../grids_for_testing/6D/2000_E6_g6_grid.dat'    2000           |Gaussian centers NG
+'../../../../grids_for_testing/6D/40000_E12_g6_grid_ini.dat'    20000      |Collocation_points Nc
+'../../../../analytic_eigenvalues/6Dmorse_sorted.dat'                      | exact eigenvalues
+500						     | tsize
+0.7						     ! alpha0  2000 --> 0.7   10000 --> 0.5
+
+

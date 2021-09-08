@@ -1,0 +1,10 @@
+6                           !d:             dimensionality
+.20 .18 .16 .14 .12 .1      !omega:         morse parameter
+10000                         !Npoints:       number of points
+6.                          !E_cut:         Energy Cutoff 
+1.8                         !C_LJ:          QRG grid parameter (order of 1)
+1000000                     !N_MMC_Box:     mmc box iterations
+1000                         !N_evals:       number of evaluations to normalize
+1000000                      !N_MMC_Grid:    MMC iterations to make the QRG
+10000                        !MMC_freq:      Frequency to update MMC move cutoff
+quasi_mc                    !norm_method    method for normalizing P
